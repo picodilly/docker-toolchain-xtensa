@@ -1,0 +1,8 @@
+[color]
+	ui = true
+[credential]
+	helper = store
+[merge]
+	conflictstyle = merge
+[push]
+	default = matching

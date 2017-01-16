@@ -7,33 +7,20 @@ RUN \
 	chown picodilly /opt
 
 # install development tools
-RUN dnf -y install \
-	autoconf \
-	bison \
+RUN dnf makecache && dnf -y install \
 	bzip2 \
-	ccache \
-	file \
 	findutils \
-	flex \
-	gcc \
-	gcc-c++ \
 	git \
-	gperf \
-	help2man \
 	libstdc++ \
-	libtool \
 	make \
-	mc \
-	ncurses-devel \
 	patch \
 	python-pip \
 	sudo \
 	tar \
-	texinfo \
 	unzip \
 	wget \
 	which \
-	&& dnf clean all
+	&& dnf clean all && rm -rf /var/cache/dnf/* && rm -f /var/lib/rpm/__db.*
 
 # install python-based esptool
 RUN pip install --quiet --no-cache-dir esptool
@@ -42,20 +29,42 @@ RUN pip install --quiet --no-cache-dir esptool
 COPY sudoers /etc
 RUN usermod -aG wheel picodilly
 
+# temporary packages needed for building toolchain
+ENV BUILD_PACKAGES \
+	autoconf \
+	bison \
+	file \
+	flex \
+	gcc \
+	gcc-c++ \
+	gperf \
+	help2man \
+	libtool \
+	ncurses-devel \
+	texinfo
+
 # install xtensa compiler toolchain
-RUN su -l picodilly -c '\
-	git clone https://github.com/picodilly/crosstool-NG && \
-	cd crosstool-NG && \
-	./bootstrap && \
-	./configure --prefix=$PWD && \
-	make && \
-	make install && \
-	export PATH=$PATH:$PWD/bin && \
-	ct-ng xtensa-lx106-elf && \
-	ct-ng build && \
-	cd .. && \
-	rm -rf crosstool-NG \
-'
+RUN dnf makecache && dnf -y install ${BUILD_PACKAGES} && \
+	su -l picodilly -c '\
+		git clone https://github.com/picodilly/crosstool-NG && \
+		cd crosstool-NG && \
+		./bootstrap && \
+		./configure --prefix=$PWD && \
+		make && \
+		make install && \
+		export PATH=$PATH:$PWD/bin && \
+		ct-ng xtensa-lx106-elf && \
+		ct-ng build && \
+		cd .. && \
+		rm -rf crosstool-NG \
+	' && \
+		dnf -y remove ${BUILD_PACKAGES} && \
+		dnf clean all && \
+		rm -rf /var/cache/dnf/* && \
+		rm -f /var/lib/rpm/__db.*
+
+# add user configuration files
+COPY gitconfig /home/picodilly/.gitconfig
 
 # by default create a prompt
 CMD ["/usr/bin/su","-l","picodilly"]
