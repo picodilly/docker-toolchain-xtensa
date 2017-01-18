@@ -9,7 +9,7 @@ history:
 	docker history $(IMAGE_TAG)
 
 run:
-	docker run --rm -ti -v ${PWD}:/home/picodilly/build:Z $(IMAGE_TAG)
+	docker run --rm -ti --device /dev/ttyUSB0:/dev/ttyUSB0 -v ${PWD}:/home/picodilly/build:Z $(IMAGE_TAG)
 
 publish: build
 	docker push $(IMAGE_TAG)

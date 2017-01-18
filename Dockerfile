@@ -3,7 +3,7 @@ MAINTAINER Milosch Meriac <milosch@picodilly.io>
 
 # add main user, give access to /opt
 RUN \
-	useradd -c "picodilly Developer" -m picodilly && \
+	useradd -c "picodilly Developer" -G dialout -m picodilly && \
 	chown picodilly /opt
 
 # install development tools
@@ -14,6 +14,7 @@ RUN dnf makecache && dnf -y install \
 	bzip2 \
 	findutils \
 	git \
+	gcc \
 	libstdc++ \
 	make \
 	mc \
@@ -26,9 +27,6 @@ RUN dnf makecache && dnf -y install \
 	which \
 	&& dnf clean all && rm -rf /var/cache/dnf/* && rm -f /var/lib/rpm/__db.*
 
-# install python-based esptool
-RUN pip install --quiet --no-cache-dir esptool
-
 # enabled root access for development
 COPY sudoers /etc
 RUN usermod -aG wheel picodilly
@@ -38,7 +36,6 @@ ENV BUILD_PACKAGES \
 	bison \
 	file \
 	flex \
-	gcc \
 	gcc-c++ \
 	gperf \
 	help2man \
@@ -81,6 +78,9 @@ RUN su -l picodilly -c '\
 		cd ../.. && \
 		rm -rf lx106-hal \
 	'
+
+# install python-based esptool
+RUN pip install --quiet --no-cache-dir esptool nodemcu-uploader
 
 # add user configuration files
 COPY gitconfig /home/picodilly/.gitconfig
