@@ -8,10 +8,19 @@ RUN \
 
 # install development tools
 RUN dnf makecache && dnf -y install \
+	bc \
+	bison \
+	bzip2 \
 	findutils \
+	flex \
 	git \
+	gcc \
+	gperf \
+	ncurses-devel \
 	sudo \
+	tar \
 	which \
+	wget \
 	&& dnf clean all && rm -rf /var/cache/dnf/* && rm -f /var/lib/rpm/__db.*
 
 # enabled root access for development
@@ -22,23 +31,14 @@ RUN usermod -aG wheel picodilly
 ENV BUILD_PACKAGES \
 	autoconf \
 	automake \
-	bc \
-	bison \
-	bzip2 \
 	file \
-	flex \
-	gcc \
 	gcc-c++ \
-	gperf \
 	help2man \
 	libtool \
-	ncurses-devel \
 	patch \
 	python-devel \
-	tar \
 	texinfo \
-	unzip \
-	wget
+	unzip
 
 # install xtensa compiler toolchain ...
 RUN dnf makecache && dnf -y install ${BUILD_PACKAGES} && \
@@ -62,6 +62,12 @@ RUN dnf makecache && dnf -y install ${BUILD_PACKAGES} && \
 		rm -f /var/lib/rpm/__db.*
 # ... and add it to the global search path
 COPY profile-xtensa.sh /etc/profile.d/xtensa.sh
+
+# add development tools
+RUN dnf makecache && dnf -y install \
+	mc \
+	pyserial \
+	&& dnf clean all && rm -rf /var/cache/dnf/* && rm -f /var/lib/rpm/__db.*
 
 # add user configuration files
 COPY gitconfig /home/picodilly/.gitconfig
