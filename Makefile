@@ -1,6 +1,6 @@
 all: build history
 
-IMAGE_TAG:="docker.io/picodilly/xtensa-lx106-elf"
+IMAGE_TAG:="docker.io/picodilly/xtensa-esp32-elf"
 
 build:
 	docker build -t $(IMAGE_TAG) .
