@@ -43,7 +43,7 @@ ENV BUILD_PACKAGES \
 # install xtensa compiler toolchain ...
 RUN dnf makecache && dnf -y install ${BUILD_PACKAGES} && \
 	su -l picodilly -c '\
-		git clone https://github.com/espressif/crosstool-ng && \
+		git clone -b xtensa-1.22.x https://github.com/espressif/crosstool-ng && \
 		cd crosstool-ng && \
 		./bootstrap && \
 		./configure --prefix=$PWD && \
