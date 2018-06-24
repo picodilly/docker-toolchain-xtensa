@@ -16,6 +16,7 @@ RUN dnf makecache && dnf -y install \
 	git \
 	gcc \
 	gperf \
+	make \
 	ncurses-devel \
 	sudo \
 	tar \
