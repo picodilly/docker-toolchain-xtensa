@@ -1,5 +1,6 @@
 all: build history
 
+SERIAL_PORT:=/dev/ttyUSB0
 IMAGE_TAG:="docker.io/picodilly/xtensa-esp32-elf"
 
 build:
@@ -9,7 +10,10 @@ history:
 	docker history $(IMAGE_TAG)
 
 run:
-	docker run --rm -ti --device /dev/ttyUSB0:/dev/ttyUSB0 -v ${PWD}:/home/picodilly/build:Z $(IMAGE_TAG)
+	docker run --rm -ti -v ${PWD}:/home/picodilly/esp32:Z $(IMAGE_TAG)
+
+run_serial:
+	docker run --rm -ti --device $(SERIAL_PORT):/dev/ttyUSB0 -v ${PWD}:/home/picodilly/esp32:Z $(IMAGE_TAG)
 
 publish: build
 	docker push $(IMAGE_TAG)
